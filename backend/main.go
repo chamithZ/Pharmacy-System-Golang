@@ -1,127 +1,24 @@
+// main.go
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"pharmacy_backend/models"
 	"pharmacy_backend/storage"
-
+	"pharmacy_backend/service"
+	"gorm.io/gorm"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	"gorm.io/gorm"
+	
 )
 
-type Item struct {
-	Name      string `json:"name"`
-	UnitPrice string `json:"unit_price"`
-	Category  string `json:"category"`
-}
 type Repository struct {
 	DB *gorm.DB
 }
 
-func (r *Repository) CreateItem(context *fiber.Ctx) error {
-	item := Item{}
-
-	err := context.BodyParser(&item)
-
-	if err != nil {
-		context.Status(http.StatusUnprocessableEntity).JSON(
-			&fiber.Map{"message": "rquest failed"})
-		return err
-	}
-
-	errr := r.DB.Create(&item).Error
-	if err != nil {
-		context.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message": "could not create item"})
-		return errr
-	}
-	context.Status(http.StatusOK).JSON(&fiber.Map{"message": "item created"})
-	return nil
-}
-
-func (r *Repository) GetItems(context *fiber.Ctx) error {
-	itemModels := &[]models.Items{}
-
-	err := r.DB.Find(itemModels).Error
-	if err != nil {
-		context.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message": "could not get items"})
-		return err
-
-	}
-	context.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "items fetched successfully",
-		"data":    itemModels,
-	})
-	return nil
-}
-
-func (r *Repository) DeleteItem(context *fiber.Ctx) error {
-	itemModel := models.Items{}
-	id := context.Params("id")
-	if id == "" {
-		context.Status(http.StatusInternalServerError).JSON(&fiber.Map{
-			"message": "id cannot be empty",
-		})
-		return nil
-	}
-
-	err := r.DB.Delete(itemModel, id)
-
-	if err.Error != nil {
-		context.Status(http.StatusBadRequest).JSON(&fiber.Map{
-			"message": "could not delete item",
-		})
-		return err.Error
-	}
-	context.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "deleted a item",
-	})
-	return nil
-}
-
-func (r *Repository) GetItemByID(context *fiber.Ctx) error{
-
-	id := context.Params("id")
-	itemModel := &models.Items{}
-	if id == "" {
-		context.Status(http.StatusInternalServerError).JSON(&fiber.Map{
-			"message": "id cannot be empty",
-		})
-		return nil
-	}
-	fmt.Println("the ID is", id)
-
-	err := r.DB.Where("id=?", id).First(itemModel).Error
-	if err != nil {
-		context.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message": "could not get item"})
-		return err
-
-	}
-	context.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "item fetched successfully",
-		"data":    itemModel,
-	})
-	return nil
-}
-
-func (r *Repository) SetupRoutes(app *fiber.App) {
-	api := app.Group("/api")
-	api.Post("/create_item", r.CreateItem)
-	api.Delete("delete_item/:id", r.DeleteItem)
-	api.Get("/get_items/:id", r.GetItemByID)
-	api.Get("/items", r.GetItems)
-
-}
-
 func main() {
 	err := godotenv.Load(".env")
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -136,21 +33,58 @@ func main() {
 	}
 
 	db, err := storage.NewConnection(config)
-
 	if err != nil {
 		log.Fatal("could not load the database")
 	}
 
-	err = models.Migrate(db)
+	err = models.MigrateInvoices(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r := Repository{
-		DB: db,
+	err = models.MigrateItems(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = models.MigrateUser(db)
+	if err != nil {
+		log.Fatal(err)
 	}
 
+
+	itemService := service.NewItemService(db)
+	invoiceService :=service.NewInvoiceService(db)
+	userService :=service.NewUserService(db)
+
 	app := fiber.New()
-	r.SetupRoutes(app)
+	setupRoutes(app, itemService)
+	setupInvoiceRoutes(app, invoiceService)
+	setupUserRoutes(app, userService)
 	app.Listen(":8080")
 }
+
+func setupRoutes(app *fiber.App, itemService *service.ItemService) {
+	api := app.Group("/api/item")
+	api.Post("/create_item", itemService.CreateItem)
+	api.Delete("delete_item/:id", itemService.DeleteItem) 
+	api.Get("/get_items/:id", itemService.GetItemByID)
+	api.Get("/items", itemService.GetItems)
+}
+
+func setupInvoiceRoutes(app *fiber.App, invoiceService *service.InvoiceService){
+	api := app.Group("/api/invoice")
+	api.Post("/create_invoice", invoiceService.CreateInvoice)
+	api.Delete("/delete_invoice/:invoiceid", invoiceService.DeleteInvoice)
+	api.Get("/get_invoice/:invoiceid", invoiceService.GetInvoiceByID)
+	api.Get("/invoices",invoiceService.GetInvoices)
+}
+
+func setupUserRoutes(app *fiber.App, userService *service.UserService) {
+	api := app.Group("/api/user")
+	api.Post("/create_user", userService.CreateUser)
+	api.Delete("delete_item/:id", userService.DeleteUser) 
+	api.Get("/get_items/:id", userService.GetUserByID)
+	api.Get("/items", userService.GetUsers)
+}
+
+

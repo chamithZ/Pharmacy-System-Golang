@@ -1,6 +1,6 @@
 package models
-
 import "gorm.io/gorm"
+
 
 type Items struct{
 	ID 		int	`gorm: "primary key;autoIncremnet" json:"id"`
@@ -9,7 +9,7 @@ type Items struct{
 	Category *string `json:"category"`
 }
 
-func Migrate(db *gorm.DB) error{
+func MigrateItems(db *gorm.DB) error{
 	err := db.AutoMigrate(&Items{})
 	return err
 }
