@@ -73,6 +73,7 @@ func setupRoutes(app *fiber.App, itemService *service.ItemService) {
 	api.Delete("delete_item/:id", itemService.DeleteItem)
 	api.Get("/get_items/:id", itemService.GetItemByID)
 	api.Get("/items", itemService.GetItems)
+	api.Put("/update_item/:id", itemService.UpdateItem)
 }
 
 func setupInvoiceRoutes(app *fiber.App, invoiceService *service.InvoiceService) {
@@ -88,5 +89,6 @@ func setupUserRoutes(app *fiber.App, userService *service.UserService) {
 	api.Post("/create_user", userService.CreateUser)
 	api.Delete("delete_item/:id", userService.DeleteUser)
 	api.Get("/get_items/:id", userService.GetUserByID)
-	api.Get("/items", userService.GetUsers)
+	api.Get("/users", userService.GetUsers)
+	api.Post("/login", userService.UserLogin)
 }

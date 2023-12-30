@@ -16,7 +16,7 @@ import (
 
 type Item struct {
 	Name      string `json:"name"`
-	UnitPrice string `json:"unit_price"`
+	UnitPrice string `json:"UnitPrice"`
 	Category  string `json:"category"`
 } 
 type Repository struct {
@@ -51,6 +51,52 @@ func (s *ItemService) CreateItem(context *fiber.Ctx) error {
 	context.Status(http.StatusOK).JSON(&fiber.Map{"message": "item created"})
 	return nil
 }
+
+func (s *ItemService) UpdateItem(context *fiber.Ctx) error {
+    id := context.Params("id")
+    if id == "" {
+        context.Status(http.StatusInternalServerError).JSON(&fiber.Map{
+            "message": "id cannot be empty",
+        })
+        return nil
+    }
+
+    itemModel := &models.Items{}
+    
+   
+    if err := s.DB.Where("id=?", id).First(itemModel).Error; err != nil {
+        context.Status(http.StatusBadRequest).JSON(
+            &fiber.Map{"message": "could not find item to update"})
+        return err
+    }
+
+
+    updatedItem := &Item{}
+    if err := context.BodyParser(updatedItem); err != nil {
+        context.Status(http.StatusUnprocessableEntity).JSON(
+            &fiber.Map{"message": "request failed"})
+        return err
+    }
+
+
+    itemModel.Name = &updatedItem.Name
+    itemModel.UnitPrice = &updatedItem.UnitPrice
+    itemModel.Category = &updatedItem.Category
+
+  
+    if err := s.DB.Save(itemModel).Error; err != nil {
+        context.Status(http.StatusBadRequest).JSON(
+            &fiber.Map{"message": "could not update item"})
+        return err
+    }
+
+    context.Status(http.StatusOK).JSON(&fiber.Map{
+        "message": "item updated successfully",
+        "data":    itemModel,
+    })
+    return nil
+}
+
 
 func (s *ItemService) GetItems(context *fiber.Ctx) error {
 	itemModels := &[]models.Items{}
