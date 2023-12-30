@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const UserRegisterView = () => {
   const [formData, setFormData] = useState({
@@ -55,6 +56,8 @@ const UserRegisterView = () => {
         const response = await axios.post('http://localhost:8080/api/user/create_user', formData);
         console.log('Success:', response.data);
         setIsFormSubmitted(true);
+        window.location.href = '/login'; 
+        
       } catch (error) {
         console.error('Error:', error);
       }
@@ -144,7 +147,7 @@ const UserRegisterView = () => {
             <div className="mb-10">
               <button
                 type="submit"
-                className="w-full font-bold text-center hover:bg-gray-600 cursor-pointer rounded-3xl bg-[#41A4FF] py-3 px-5 text-white transition hover:bg-opacity-90"
+                className="w-2/5 font-bold text-center hover:bg-gray-600 cursor-pointer rounded-3xl bg-[#41A4FF] py-3 px-5 text-white transition hover:bg-opacity-90"
               >
                 Sign Up
               </button>
@@ -153,10 +156,12 @@ const UserRegisterView = () => {
         </div>
 
         <div className="flex flex-col justify-center text-center pb-20">
+          <Link to="/login">
           <p className="text-base text-[#adadad]">
             Already a member yet?
             Sign In
           </p>
+          </Link>
         </div>
       </div>
     </div>

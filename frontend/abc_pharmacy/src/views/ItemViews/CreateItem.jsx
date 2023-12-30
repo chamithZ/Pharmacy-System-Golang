@@ -21,19 +21,29 @@ const CreateItem = () => {
 
   
     if (formData.category === 'Select a category') {
-      newErrors.usertype = 'Please select a  category';
+      newErrors.category = 'Please select a  category';
     }
-  
+
+    if (!formData.UnitPrice || !validateNumberInput(formData.UnitPrice)) {
+      newErrors.UnitPrice = 'Please enter a valid price (without text)';
+    }
    
     setErrors(newErrors);
   
     return Object.keys(newErrors).length === 0;
   };
   
+  const validateNumberInput = (input) => {
+    
+    const numberRegex = /^-?\d*\.?\d*$/;
+    return numberRegex.test(input);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const isValid = validateForm();
+    
 
     if (isValid) {
       try {
@@ -72,13 +82,13 @@ const CreateItem = () => {
             <div className="mb-6">
               <input
                 placeholder="price"
-                type="number"
-                id="price"
+                type="text"
+                id="UnitPrice"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, UnitPrice: e.target.value })}
                 className="border-[#E9EDF4] w-full rounded-3xl border bg-[#FCFDFE] py-3 px-5 text-base text-body-color placeholder-[#ACB6BE] outline-none focus:ring focus:border-[#41A4FF] focus-visible:shadow-none"
               />
-              {errors.name && <p className="text-red-500">{errors.name}</p>}
+              {errors.UnitPrice && <p className="text-red-500">{errors.UnitPrice}</p>}
             </div>
 
             <div className="mb-6">
@@ -95,7 +105,7 @@ const CreateItem = () => {
                   <option value="Medical Devices">Medical Devices</option>
                   <option value="Personal Care and Hygiene Product">Personal Care and Hygiene Product</option>
                   <option value="First Aid Supplies">First Aid Supplies</option>
-                  <option value="First Aid Supplies">Skin Care Product</option>
+                  <option value="Skin Care Product">Skin Care Product</option>
                 </select>
                 {errors.type && <p className="text-red-500">{errors.type}</p>}
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -114,7 +124,7 @@ const CreateItem = () => {
             <div className="mb-10">
               <button
                 type="submit"
-                className="w-full font-bold text-center hover:bg-gray-600 cursor-pointer rounded-1xl bg-[#41A4FF] py-3 px-5 text-white transition hover:bg-opacity-90"
+                className="w-2/5 font-bold text-center hover:bg-gray-600 cursor-pointer rounded-3xl bg-[#41A4FF] py-3 px-5 text-white transition hover:bg-opacity-90"
               >
                 Add Item
               </button>
