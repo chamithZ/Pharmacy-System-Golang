@@ -4,6 +4,7 @@ package service
 
 import (
 	"fmt"
+	"os"
 	"time"
 	"net/http"
 	"github.com/dgrijalva/jwt-go"
@@ -11,10 +12,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
+	
 )
 
 
-var jwtSecret = []byte("your_jwt_secret_key")
+var jwtSecret = []byte(os.Getenv("jwtSecret"))
 
 type User struct {
 	Name      string `json:"name"`
@@ -65,7 +67,7 @@ func (s *UserService) CreateUser(context *fiber.Ctx) error {
 		return err
 	}
 
-	context.Status(http.StatusOK).JSON(&fiber.Map{"message": "item created"})
+	context.Status(http.StatusOK).JSON(&fiber.Map{"message": "User created"})
 	return nil
 }
 func (s *UserService) GetUsers(context *fiber.Ctx) error {
