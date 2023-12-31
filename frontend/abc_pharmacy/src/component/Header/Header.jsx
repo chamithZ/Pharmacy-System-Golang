@@ -115,7 +115,7 @@ function Header() {
 
         </nav>
         {isLoggedIn() && (
-          <div className="text-blue-500 hover:text-blue-700" >
+          <div className="text-blue-500 hover:text-blue-700 ml-4" >
           <img
             onClick={handleLogout}
             src={img1}

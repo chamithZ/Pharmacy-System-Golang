@@ -12,11 +12,11 @@ import img4 from '../Assests/img4.png'
 
 
 function Home() {
-  // Check if the user is logged in based on your authentication logic
+ 
   const isLoggedIn = () => {
-    // Check if the user is logged in by retrieving the token from localStorage
+    
     const token = localStorage.getItem('jwtToken');
-    return !!token; // Return true if the token exists, false otherwise
+    return !!token; 
   };
 
   const targetComponentRef = useRef(null);
@@ -48,16 +48,10 @@ function Home() {
         <main className="container mx-auto mt-5" > {/* Add mb-16 (margin-bottom) */}
         
           <section className="text-center m-0">
-            {/* <div className="mb-10">
-              <img
-                src={cover}
-                alt="Cover Photo"
-                className="w-full "
-              />
-            </div> */}
+           
 
             {/* ----Card Section ----- */}
-            <div className="flex flex-wrap justify-center bg-gradient-to-br from-blue-400 to-blue-50">
+            <div className="flex flex-wrap justify-center bg-gradient-to-br from-blue-400 to-blue-50 rounded-lg">
               {/* Feature 1 */}
               <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4 h-{200}">
                 <div className="bg-white p-6 rounded-lg shadow-md">

@@ -18,6 +18,7 @@ type Item struct {
 	Name      string `json:"name"`
 	UnitPrice string `json:"UnitPrice"`
 	Category  string `json:"category"`
+	UserId string `json:"userid"`
 } 
 type Repository struct {
 	DB *gorm.DB

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const CreateItem = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +10,7 @@ const CreateItem = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+
 
   const validateForm = () => {
     let newErrors = {};
@@ -49,7 +50,17 @@ const CreateItem = () => {
       try {
         const response = await axios.post('http://localhost:8080/api/item/create_item', formData);
         console.log('Success:', response.data);
-        setIsFormSubmitted(true);
+      
+        Swal.fire({
+          icon: 'success',
+          title: 'Item added successfully!',
+          showConfirmButton: false,
+          timer: 1000,
+        });
+       
+        setTimeout(() => {
+          window.location.href = '/viewItems';
+        }, 1000);
       } catch (error) {
         console.error('Error:', error);
       }

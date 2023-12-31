@@ -19,6 +19,7 @@ type Invoice struct {
 	Email string `jsona:"email"`
 	Address string `json:"address"`
 	BillType string `json:"billtype"`
+	UserId string `json:"userid"`
 } 
 
 type InvoiceService struct {

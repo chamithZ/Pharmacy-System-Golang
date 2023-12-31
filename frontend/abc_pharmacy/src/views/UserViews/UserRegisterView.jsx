@@ -12,7 +12,7 @@ const UserRegisterView = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+
 
   const validateForm = () => {
     let newErrors = {};
@@ -55,7 +55,7 @@ const UserRegisterView = () => {
       try {
         const response = await axios.post('http://localhost:8080/api/user/create_user', formData);
         console.log('Success:', response.data);
-        setIsFormSubmitted(true);
+        
         window.location.href = '/login'; 
         
       } catch (error) {

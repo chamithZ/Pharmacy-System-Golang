@@ -32,6 +32,7 @@ function Login() {
       if (response.status === 200) {
         const { token } = response.data;
         localStorage.setItem('jwtToken', token);
+        localStorage.setItem('userId', token);
         const userRole = getUserRoleFromToken(token);
 
         if (userRole === 'Pharmacy_staff') {

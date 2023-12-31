@@ -8,6 +8,7 @@ type Invoices struct{
 	Email *string `jsona:"email"`
 	Address *string `json:"address"`
 	BillType *string `json:"billtype"`
+	UserId string `json:"userid"`
 }
 
 func MigrateInvoices(db *gorm.DB) error{
